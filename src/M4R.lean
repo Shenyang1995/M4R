@@ -24,7 +24,37 @@ example : XYZ 3 ⟨2,by linarith⟩ = ⟨2, by linarith⟩ := rfl
 --set_option pp.all true
 theorem degenerate(n:ℕ)(j:ℕ)(k:ℕ)(G : Type*)[group G](g:fin (n+2)→ G)(h:j≤ k): 
 F j (F (k+1) g) = F k (F j g):=
-begin 
+begin
+unfold F,
+funext t,
+cases t with t ht,
+-- I got this line by typing "dsimp"
+show ite (t < j) (ite (t < k + 1) (g ⟨t, _⟩) (ite (t = k + 1) (g ⟨t, _⟩ * g ⟨t + 1, _⟩) (g ⟨t + 1, _⟩)))
+      (ite (t = j)
+         (ite (t < k + 1) (g ⟨t, _⟩) (ite (t = k + 1) (g ⟨t, _⟩ * g ⟨t + 1, _⟩) (g ⟨t + 1, _⟩)) *
+            ite (t + 1 < k + 1) (g ⟨t + 1, _⟩)
+              (ite (t + 1 = k + 1) (g ⟨t + 1, _⟩ * g ⟨t + 1 + 1, _⟩) (g ⟨t + 1 + 1, _⟩)))
+         (ite (t + 1 < k + 1) (g ⟨t + 1, _⟩)
+            (ite (t + 1 = k + 1) (g ⟨t + 1, _⟩ * g ⟨t + 1 + 1, _⟩) (g ⟨t + 1 + 1, _⟩)))) =
+    ite (t < k) (ite (t < j) (g ⟨t, _⟩) (ite (t = j) (g ⟨t, _⟩ * g ⟨t + 1, _⟩) (g ⟨t + 1, _⟩)))
+      (ite (t = k)
+         (ite (t < j) (g ⟨t, _⟩) (ite (t = j) (g ⟨t, _⟩ * g ⟨t + 1, _⟩) (g ⟨t + 1, _⟩)) *
+            ite (t + 1 < j) (g ⟨t + 1, _⟩)
+              (ite (t + 1 = j) (g ⟨t + 1, _⟩ * g ⟨t + 1 + 1, _⟩) (g ⟨t + 1 + 1, _⟩)))
+         (ite (t + 1 < j) (g ⟨t + 1, _⟩)
+            (ite (t + 1 = j) (g ⟨t + 1, _⟩ * g ⟨t + 1 + 1, _⟩) (g ⟨t + 1 + 1, _⟩)))),
+by_cases h1 : t < j,
+{ rw if_pos h1,
+  rw if_pos (lt_trans h1 (nat.lt_succ_of_le h)),
+  --rw if_pos (show t < k, from lt_of_lt_of_le h1 h),
+  rw if_pos (lt_of_lt_of_le h1 h),
+  rw if_pos h1
+},
+rw if_neg h1,
+-- only one goal
+repeat {sorry}
+end
+#exit 
 funext t,
 conv begin
   to_lhs,
@@ -43,13 +73,13 @@ swap,
 {split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
 
 
-{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
+--{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
 
 
 
 
 --split_ifs; try {refl}; try {rw (show (t : fin(n + 1)).val = t.val, by refl) at *},
-{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
+--{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
 
 
 
