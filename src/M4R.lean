@@ -51,9 +51,55 @@ by_cases h1 : t < j,
   rw if_pos h1
 },
 rw if_neg h1,
+by_cases h2:t=j,
+{ rw if_pos (h2),
+  cases h2,
+  rw if_pos (nat.lt_succ_of_le h),
+  rw le_iff_eq_or_lt at h,
+  cases h,
+  {cases h,
+  rw if_neg (lt_irrefl (j+1)),
+  rw if_pos (rfl),
+  rw if_neg (lt_irrefl j),
+  rw if_pos (rfl),
+  rw if_neg (lt_irrefl j),
+  rw if_pos (rfl),
+  rw if_neg (show ¬ (j+1<j), from mt (le_of_lt) (nat.not_succ_le_self j) ), 
+  rw if_neg (show ¬ (j+1=j), from mt (le_of_eq) (nat.not_succ_le_self j) ), 
+  rw mul_assoc,
+    },
+  {rw if_pos (nat.succ_lt_succ h),
+  rw if_pos h,
+  rw if_neg (lt_irrefl j),
+  rw if_pos rfl,
+  },
+},
+rw if_neg h2,
+by_cases h3 : t < k, 
+{  rw if_pos (nat.lt_succ_iff.2 h3),
+   rw if_pos h3,
+   rw if_neg h1,
+   rw if_neg h2,
+
+},
+rw if_neg (mt nat.lt_succ_iff.1 h3),
+by_cases h4 : t = k,
+{  cases h4,
+   rw if_pos rfl,
+   rw if_neg (lt_irrefl k),
+   rw if_pos rfl,
+   rw if_neg h1,
+   rw if_neg h2,
+   rw if_neg (not_lt_of_le (le_trans h (nat.le_succ k))),
+   rw if_neg (ne_of_gt (gt_iff_lt.2 (nat.succ_le_succ h : j < k + 1))),--(nat.succ_le_succ h : j < k + 1)),
+
+},
+
 -- only one goal
 repeat {sorry}
 end
+
+example (j : ℕ) : ¬ (j+1<j) := mt (le_of_lt) (nat.not_succ_le_self j)
 #exit 
 funext t,
 conv begin
