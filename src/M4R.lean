@@ -2,7 +2,7 @@ import algebra.group -- for is_add_group_hom
 import group_theory.subgroup -- for kernels
 import algebra.module
 import tactic.linarith
-
+open_lo
 class G_module (G : Type*) [group G] (M : Type*) [add_comm_group M]
   extends  has_scalar G M :=
 (id : ∀ m : M, (1 : G) • m = m)
@@ -22,7 +22,7 @@ def XYZ (n : ℕ): fin n → fin (n + 1) := coe
 example : XYZ 3 ⟨2,by linarith⟩ = ⟨2, by linarith⟩ := rfl
 
 --set_option pp.all true
-theorem degenerate(n:ℕ)(j:ℕ)(k:ℕ)(G : Type*)[group G](g:fin (n+2)→ G)(h:j≤ k): 
+theorem degenerate{n:ℕ}{j:ℕ}{k:ℕ}{G : Type*}[group G](h:j≤ k)(g:fin (n+2)→ G): 
 F j (F (k+1) g) = F k (F j g):=
 begin
 unfold F,
@@ -122,19 +122,19 @@ end
 theorem neg_degenerate (n:ℕ)(j:ℕ)(k:ℕ)(G : Type*)[group G](g:fin (n+2)→ G)(h:j≤ k) (M : Type*) [add_comm_group M] [G_module G M](v:cochain n G M)
 : (-1:ℤ)^n • (v (F j (F (k+1) g))) + (-1:ℤ)^(n+1)• (v (F k (F j g)))=0:=
 begin 
-rw degenerate,
- 
-
- sorry
-
+rw degenerate h,
+show gsmul ((-1) ^ n) (v (F k (F j g))) + gsmul ((-1) ^ (n + 1)) (v (F k (F j g))) = 0,
+rw <-add_gsmul (v (F k (F j g))) ((-1)^n) ((-1)^(n+1)),
+show ((-1 : ℤ) ^ n + (-1) ^ (n + 1)) • (v (F k (F j g))) = 0,
+rw neg_one_power n G M ,
 end
 
 
-list.map (λ n, (v (F j (F (k+1) g)))) list.range(n)
+--list.map (λ n, (v (F j (F (k+1) g)))) list.range(n)
 
 
-#example (a:ℤ )(b c:ℕ  ):a• (b+c)=a • b + a• c :=begin library_search end
-#example (a b:ℕ) :(-a:ℤ ) + (-b:ℤ )=-(a+b) := begin library_search end
+--example (a b:ℤ )(M : Type*) [add_comm_group M](c:M):(a+b) • c=a• c+b• c :=begin library_search end
+--example (a b:ℕ) :(-a:ℤ ) + (-b:ℤ )=-(a+b) := begin library_search end
 --#example (n:ℕ ): (-1:ℤ)^n  + (-1:ℤ)^(n+1)=0 := begin library_search end
 #exit 
 
