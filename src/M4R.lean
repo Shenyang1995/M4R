@@ -2,7 +2,7 @@ import algebra.group -- for is_add_group_hom
 import group_theory.subgroup -- for kernels
 import algebra.module
 import tactic.linarith
-open_lo
+
 class G_module (G : Type*) [group G] (M : Type*) [add_comm_group M]
   extends  has_scalar G M :=
 (id : ∀ m : M, (1 : G) • m = m)
@@ -118,21 +118,35 @@ norm_num,
 
 end
 
+--open_locale add_group
 
 theorem neg_degenerate (n:ℕ)(j:ℕ)(k:ℕ)(G : Type*)[group G](g:fin (n+2)→ G)(h:j≤ k) (M : Type*) [add_comm_group M] [G_module G M](v:cochain n G M)
 : (-1:ℤ)^n • (v (F j (F (k+1) g))) + (-1:ℤ)^(n+1)• (v (F k (F j g)))=0:=
 begin 
 rw degenerate h,
-show gsmul ((-1) ^ n) (v (F k (F j g))) + gsmul ((-1) ^ (n + 1)) (v (F k (F j g))) = 0,
-rw <-add_gsmul (v (F k (F j g))) ((-1)^n) ((-1)^(n+1)),
-show ((-1 : ℤ) ^ n + (-1) ^ (n + 1)) • (v (F k (F j g))) = 0,
-rw neg_one_power n G M ,
+--show gsmul ((-1) ^ n) (v (F k (F j g))) + gsmul ((-1) ^ (n + 1)) (v (F k (F j g))) = 0,
+rw <-add_smul,
+--show ((-1 : ℤ) ^ n + (-1) ^ (n + 1)) • (v (F k (F j g))) = 0,
+rw neg_one_power n G M,
+end
+open finset
+def finset.sum_smul' {α : Type*} {R : Type*} [semiring R] {M : Type*} [add_comm_monoid M]
+  [semimodule R M] (s : finset α) (r : R) (f : α → M) :
+    finset.sum s (λ (x : α), (r • (f x))) = r • (finset.sum s f) :=
+by haveI := classical.dec_eq α; exact
+finset.induction_on s (by simp) (by simp [_root_.smul_add] {contextual := tt})
+
+theorem double_sum_zero (n':ℕ)(G : Type*)[group G](g:fin (n'+3)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain (n'+1) G M):
+(range (n'+1)).sum(λ i, (-1:ℤ)^(i+1)• (range n').sum(λ j, (-1:ℤ )^(j+1)• (v (F j (F i g))))) =0:=
+begin
+rw <-finset.sum_smul',
+sorry
 end
 
 
---list.map (λ n, (v (F j (F (k+1) g)))) list.range(n)
 
 
+#check @finset.sum_smul
 --example (a b:ℤ )(M : Type*) [add_comm_group M](c:M):(a+b) • c=a• c+b• c :=begin library_search end
 --example (a b:ℕ) :(-a:ℤ ) + (-b:ℤ )=-(a+b) := begin library_search end
 --#example (n:ℕ ): (-1:ℤ)^n  + (-1:ℤ)^(n+1)=0 := begin library_search end
