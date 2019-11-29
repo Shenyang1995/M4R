@@ -10,7 +10,7 @@ class G_module (G : Type*) [group G] (M : Type*) [add_comm_group M]
 (linear : ∀ g : G, ∀ m n : M, g • (m + n) = g • m + g • n)
 
 def cochain(n:ℕ)(G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] := 
-fin n → G → M
+(fin n → G) → M
 
 def F{n:ℕ}(j:ℕ) {G : Type*}[group G](g:fin (n+1)→ G):fin n→ G
 := λ k,  if k.val < j then g ⟨k.val, lt_trans k.2 $ lt_add_one _⟩ else 
@@ -91,16 +91,54 @@ by_cases h4 : t = k,
    rw if_neg h1,
    rw if_neg h2,
    rw if_neg (not_lt_of_le (le_trans h (nat.le_succ k))),
-   rw if_neg (ne_of_gt (gt_iff_lt.2 (nat.succ_le_succ h : j < k + 1))),--(nat.succ_le_succ h : j < k + 1)),
-
+   rw if_neg (ne_of_gt (nat.succ_le_succ h) : ¬ (k + 1 = j)),
 },
-
--- only one goal
-repeat {sorry}
+rw if_neg (mt (nat.succ_inj) h4),
+rw if_neg h3,
+rw if_neg h4,
+have h5: ¬ t+1<j, by linarith,
+rw if_neg h5,
+have h6: ¬ t+1=j, by linarith,
+rw if_neg h6,
+-- no goal!
 end
 
-example (j : ℕ) : ¬ (j+1<j) := mt (le_of_lt) (nat.not_succ_le_self j)
+--example (j : ℕ) : ¬ (j+1<j) := mt (le_of_lt) (nat.not_succ_le_self j)
+
+theorem neg_one_power(n:ℕ )(G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M]
+: ∀ m : M, ((-1:ℤ)^n  + (-1:ℤ)^(n+1)) • m = 0 := 
+begin 
+intro m,
+induction n with h hd,
+norm_num,
+rw nat.succ_eq_add_one,
+rw pow_add (-1:ℤ ) h 1,
+rw pow_add (-1:ℤ ) h (1+1),
+norm_num,
+
+end
+
+
+theorem neg_degenerate (n:ℕ)(j:ℕ)(k:ℕ)(G : Type*)[group G](g:fin (n+2)→ G)(h:j≤ k) (M : Type*) [add_comm_group M] [G_module G M](v:cochain n G M)
+: (-1:ℤ)^n • (v (F j (F (k+1) g))) + (-1:ℤ)^(n+1)• (v (F k (F j g)))=0:=
+begin 
+rw degenerate,
+ 
+
+ sorry
+
+end
+
+
+list.map (λ n, (v (F j (F (k+1) g)))) list.range(n)
+
+
+#example (a:ℤ )(b c:ℕ  ):a• (b+c)=a • b + a• c :=begin library_search end
+#example (a b:ℕ) :(-a:ℤ ) + (-b:ℤ )=-(a+b) := begin library_search end
+--#example (n:ℕ ): (-1:ℤ)^n  + (-1:ℤ)^(n+1)=0 := begin library_search end
 #exit 
+
+
 funext t,
 conv begin
   to_lhs,
