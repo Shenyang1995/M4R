@@ -184,7 +184,16 @@ def invo : ℕ × ℕ → ℕ × ℕ :=
 lemma invo_def1 {jk : ℕ × ℕ} (h : jk.1 ≤ jk.2) :
   invo jk = ⟨jk.2 + 1, jk.1⟩ := if_pos h
 
-lemma invo_ineq {jk : ℕ × ℕ}
+lemma invo_ineq1 {jk : ℕ × ℕ}
+  (h : jk.1 ≤ jk.2) :
+  ¬(invo jk).1 ≤ (invo jk).2 :=
+begin
+  unfold invo,
+  rw if_pos h,
+  exact not_le.2 (nat.lt_succ_of_le h),
+end
+
+lemma invo_ineq2 {jk : ℕ × ℕ}
   (h : ¬jk.1 ≤ jk.2) :
   (invo jk).1 ≤ (invo jk).2 :=
 begin
@@ -193,6 +202,20 @@ begin
   rw not_le at h,
   exact nat.pred_le_pred h,
 end
+
+lemma invo_aux {j k : ℕ} (h : ¬j ≤ k) : j - 1 + 1 = j :=
+nat.succ_pred_eq_of_pos $ lt_of_le_of_lt (zero_le _) (lt_of_not_ge h)
+
+lemma invo_invo (jk : ℕ × ℕ) : invo (invo jk) = jk :=
+begin
+  unfold invo,
+  split_ifs,
+  { exfalso, linarith},
+  { ext, refl, simp},
+  { ext, dsimp, exact invo_aux h, refl},
+  { sorry}
+end
+
 
 --example (n:ℕ )(x:ℕ){G : Type*}[group G](g:fin (n+2)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain n G M):F2 g v(x,x)=v (F (x) (F (x) g)):=rfl
 #print prod
@@ -214,17 +237,25 @@ begin
     { rw add_comm,
       convert F2_degenerate hin g v,
       exact invo_def1 hin},
-    { convert F2_degenerate (invo_ineq hin) g v,
+    { convert F2_degenerate (invo_ineq2 hin) g v,
       unfold invo,
       rw if_neg hin,
       ext,
-        swap, refl,
-      refine (nat.succ_pred_eq_of_pos _).symm,
-      refine lt_of_le_of_lt (by simp) (lt_of_not_ge hin),
+        exact (invo_aux hin).symm,
+      refl,
     }
   },
-  { sorry },
-  { sorry },
+  { intros jk hjk _ h,
+    dsimp at h,
+    by_cases hin : jk.1 ≤ jk.2,
+    { apply invo_ineq1 hin,
+      rwa h},
+    { have h2 := invo_ineq2 hin,
+      apply hin,
+      rwa h at h2}},
+  { intros jk hjk,
+    dsimp,
+    sorry },
   { sorry }
 end
 
