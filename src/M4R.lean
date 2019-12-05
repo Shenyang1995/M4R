@@ -2,6 +2,7 @@ import algebra.group -- for is_add_group_hom
 import group_theory.subgroup -- for kernels
 import algebra.module
 import tactic.linarith
+import tactic.omega
 
 class G_module (G : Type*) [group G] (M : Type*) [add_comm_group M]
   extends  has_scalar G M :=
@@ -166,7 +167,7 @@ def F2{n:ℕ}{G : Type*}[group G](g:fin (n+2)→ G){M : Type*} [add_comm_group M
 λ j, (-1:ℤ)^(j.1+j.2)• v (F (j.2) (F (j.1) g))
 
 
-theorem F2_degenerate {n:ℕ}(j:ℕ)(k:ℕ)(h:j≤ k){G : Type*}[group G](g:fin (n+2)→ G){M : Type*} [add_comm_group M] [G_module G M](v:cochain n G M):
+theorem F2_degenerate {n:ℕ}{j:ℕ}{k:ℕ}(h:j≤ k){G : Type*}[group G](g:fin (n+2)→ G){M : Type*} [add_comm_group M] [G_module G M](v:cochain n G M):
 F2 g v (k+1, j)+F2 g v (j, k)=0:=
 begin 
 unfold F2,
@@ -180,6 +181,19 @@ end
 def invo : ℕ × ℕ → ℕ × ℕ :=
 λ jk, if jk.1 ≤ jk.2 then ⟨jk.2 + 1, jk.1⟩ else ⟨jk.2, jk.1 - 1⟩
 
+lemma invo_def1 {jk : ℕ × ℕ} (h : jk.1 ≤ jk.2) :
+  invo jk = ⟨jk.2 + 1, jk.1⟩ := if_pos h
+
+lemma invo_ineq {jk : ℕ × ℕ}
+  (h : ¬jk.1 ≤ jk.2) :
+  (invo jk).1 ≤ (invo jk).2 :=
+begin
+  unfold invo,
+  rw if_neg h,
+  rw not_le at h,
+  exact nat.pred_le_pred h,
+end
+
 --example (n:ℕ )(x:ℕ){G : Type*}[group G](g:fin (n+2)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain n G M):F2 g v(x,x)=v (F (x) (F (x) g)):=rfl
 #print prod
 #check finset.product
@@ -189,7 +203,26 @@ theorem double_sum_zero1 (n':ℕ)(G : Type*)[group G](g:fin (n'+3)→ G)(M : Typ
 begin
   rw <-sum_product,
   apply sum_involution (λ jk h, invo jk),
-  { sorry },
+  { intros jk hjk,
+    let j := jk.1,
+    let k := jk.2,
+    -- do we need these next three lines?
+    cases mem_product.1 hjk with hj hk,
+    replace hj : j < n' + 1 := mem_range.1 hj,
+    replace hk : k < n' := mem_range.1 hk,
+    by_cases hin : j ≤ k,
+    { rw add_comm,
+      convert F2_degenerate hin g v,
+      exact invo_def1 hin},
+    { convert F2_degenerate (invo_ineq hin) g v,
+      unfold invo,
+      rw if_neg hin,
+      ext,
+        swap, refl,
+      refine (nat.succ_pred_eq_of_pos _).symm,
+      refine lt_of_le_of_lt (by simp) (lt_of_not_ge hin),
+    }
+  },
   { sorry },
   { sorry },
   { sorry }
