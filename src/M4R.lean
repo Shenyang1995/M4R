@@ -177,21 +177,29 @@ rw neg_degenerate,
 exact h,
 end
 
+def invo : ℕ × ℕ → ℕ × ℕ :=
+λ jk, if jk.1 ≤ jk.2 then ⟨jk.2 + 1, jk.1⟩ else ⟨jk.2, jk.1 - 1⟩
+
 --example (n:ℕ )(x:ℕ){G : Type*}[group G](g:fin (n+2)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain n G M):F2 g v(x,x)=v (F (x) (F (x) g)):=rfl
-
-
-
+#print prod
+#check finset.product
+#check finset.range
 theorem double_sum_zero1 (n':ℕ)(G : Type*)[group G](g:fin (n'+3)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain (n'+1) G M):
 (range (n'+1)).sum(λ i, (range (n')).sum(λ j, (F2 g v (i,j)))) =0:=
 begin
-rw <-sum_product,
-sorry
+  rw <-sum_product,
+  apply sum_involution (λ jk h, invo jk),
+  { sorry },
+  { sorry },
+  { sorry },
+  { sorry }
 end
 
 #check @finset.product
 #check @finset.sum_bij
 #check @finset.sum_bind
 #check @finset.sum_smul
+#check finset.bind
 --example (a b:ℤ )(M : Type*) [add_comm_group M](c:M):(a+b) • c=a• c+b• c :=begin library_search end
 --example (a b:ℕ) :(-a:ℤ ) + (-b:ℤ )=-(a+b) := begin library_search end
 --#example (n:ℕ ): (-1:ℤ)^n  + (-1:ℤ)^(n+1)=0 := begin library_search end
