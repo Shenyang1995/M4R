@@ -121,14 +121,16 @@ end
 --open_locale add_group
 
 theorem neg_degenerate (n:ℕ)(j:ℕ)(k:ℕ)(G : Type*)[group G](g:fin (n+2)→ G)(h:j≤ k) (M : Type*) [add_comm_group M] [G_module G M](v:cochain n G M)
-: (-1:ℤ)^n • (v (F j (F (k+1) g))) + (-1:ℤ)^(n+1)• (v (F k (F j g)))=0:=
+: (-1:ℤ)^(j+k+1) • (v (F j (F (k+1) g))) + (-1:ℤ)^(j+k)• (v (F k (F j g)))=0:=
 begin 
 rw degenerate h,
 --show gsmul ((-1) ^ n) (v (F k (F j g))) + gsmul ((-1) ^ (n + 1)) (v (F k (F j g))) = 0,
 rw <-add_smul,
 --show ((-1 : ℤ) ^ n + (-1) ^ (n + 1)) • (v (F k (F j g))) = 0,
-rw neg_one_power n G M,
+rw add_comm,
+rw neg_one_power (j+k) G M,
 end
+
 open finset
 def finset.sum_smul' {α : Type*} {R : Type*} [semiring R] {M : Type*} [add_comm_monoid M]
   [semimodule R M] (s : finset α) (r : R) (f : α → M) :
@@ -136,16 +138,59 @@ def finset.sum_smul' {α : Type*} {R : Type*} [semiring R] {M : Type*} [add_comm
 by haveI := classical.dec_eq α; exact
 finset.induction_on s (by simp) (by simp [_root_.smul_add] {contextual := tt})
 
+theorem pow_add'(a : ℤ ) (m n : ℕ): a ^ m * a ^ n=a ^ (m + n) :=
+begin 
+rw pow_add,
+end
+
 theorem double_sum_zero (n':ℕ)(G : Type*)[group G](g:fin (n'+3)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain (n'+1) G M):
-(range (n'+1)).sum(λ i, (-1:ℤ)^(i+1)• (range n').sum(λ j, (-1:ℤ )^(j+1)• (v (F j (F i g))))) =0:=
+(range (n'+1)).sum(λ i, (-1:ℤ)^(i+1)• (range i).sum(λ j, (-1:ℤ )^(j+1)• (v (F j (F i g))))) =0:=
 begin
-rw <-finset.sum_smul',
+
+simp only [(finset.sum_smul' _ _ _).symm, smul_smul, pow_add],
+norm_num,
+simp only [pow_add'],
+--simp only [degenerate2],
 sorry
 end
 
 
+theorem degenerate2{n:ℕ}{j:ℕ}{k:ℕ}{G : Type*}[group G](h:j≤ k)(g:fin (n+2)→ G): 
+ F k (F j g)=F j (F (k+1) g) := 
+ begin 
+ rw degenerate,
+ exact h,
+ end 
+
+def F2{n:ℕ}{G : Type*}[group G](g:fin (n+2)→ G){M : Type*} [add_comm_group M] [G_module G M](v:cochain n G M): ℕ × ℕ → M:=
+λ j, (-1:ℤ)^(j.1+j.2)• v (F (j.2) (F (j.1) g))
 
 
+theorem F2_degenerate {n:ℕ}(j:ℕ)(k:ℕ)(h:j≤ k){G : Type*}[group G](g:fin (n+2)→ G){M : Type*} [add_comm_group M] [G_module G M](v:cochain n G M):
+F2 g v (k+1, j)+F2 g v (j, k)=0:=
+begin 
+unfold F2,
+norm_num,
+rw add_comm,
+rw <-add_assoc,
+rw neg_degenerate,
+exact h,
+end
+
+--example (n:ℕ )(x:ℕ){G : Type*}[group G](g:fin (n+2)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain n G M):F2 g v(x,x)=v (F (x) (F (x) g)):=rfl
+
+
+
+theorem double_sum_zero1 (n':ℕ)(G : Type*)[group G](g:fin (n'+3)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain (n'+1) G M):
+(range (n'+1)).sum(λ i, (range (n')).sum(λ j, (F2 g v (i,j)))) =0:=
+begin
+rw <-sum_product,
+sorry
+end
+
+#check @finset.product
+#check @finset.sum_bij
+#check @finset.sum_bind
 #check @finset.sum_smul
 --example (a b:ℤ )(M : Type*) [add_comm_group M](c:M):(a+b) • c=a• c+b• c :=begin library_search end
 --example (a b:ℕ) :(-a:ℤ ) + (-b:ℤ )=-(a+b) := begin library_search end
