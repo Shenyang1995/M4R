@@ -213,9 +213,12 @@ begin
   { exfalso, linarith},
   { ext, refl, simp},
   { ext, dsimp, exact invo_aux h, refl},
-  { sorry}
+  { exfalso, 
+    rw not_le at h_1, 
+    rw nat.lt_iff_add_one_le at h_1,
+    rw invo_aux h at h_1, 
+    linarith,}
 end
-
 
 --example (n:ℕ )(x:ℕ){G : Type*}[group G](g:fin (n+2)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain n G M):F2 g v(x,x)=v (F (x) (F (x) g)):=rfl
 #print prod
@@ -255,8 +258,19 @@ begin
       rwa h at h2}},
   { intros jk hjk,
     dsimp,
-    sorry },
-  { sorry }
+    exact invo_invo jk, },
+  { intros jk hjk,
+
+    dsimp, 
+    unfold invo,
+    let j := jk.1,
+    let k := jk.2,
+    -- do we need these next three lines?
+    cases mem_product.1 hjk with hj hk,
+    replace hj : j < n' + 1 := mem_range.1 hj,
+    replace hk : k < n' := mem_range.1 hk,
+    split_ifs,
+    sorry }
 end
 
 #check @finset.product
