@@ -12,6 +12,12 @@ class G_module (G : Type*) [group G] (M : Type*) [add_comm_group M]
 (mul : ∀ g h : G, ∀ m : M, g • (h • m) = (g * h) • m)
 (linear : ∀ g : G, ∀ m n : M, g • (m + n) = g • m + g • n)
 
+attribute [simp] G_module.linear G_module.mul
+
+@[simp] lemma G_module.G_neg {G : Type*} [group G] {M : Type*} [add_comm_group M]
+  [G_module G M]
+  (g : G) (m : M) : g • (-m) = -(g • m) := sorry
+
 def cochain(n:ℕ)(G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] := 
 (fin n → G) → M
 
@@ -340,7 +346,7 @@ example (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M]
 (φ : cochain 1 G M) (hφ : d φ = (λ i, 0)) (g h : G) : φ (λ _, g * h) = φ (λ _, g) + g • φ (λ _, h) :=
 begin
   unfold d at hφ,
-  let glist : fin 2 → G := λ i, if i.val = 0 then g else if i.val = 1 then h else sorry,
+  let glist : fin 2 → G := λ i, if i.val = 0 then g else if i.val = 1 then h else 1,
   have h2 : (λ (gi : fin (1 + 1) → G),
        gi ⟨0, _⟩ • φ (λ (i : fin 1), gi ⟨i.val + 1, _⟩) +
          finset.sum (finset.range (1 + 1)) (λ (j : ℕ), (-1: ℤ) ^ (j + 1) • φ (F j gi))) glist = 0,
@@ -392,6 +398,55 @@ begin
   unfold d,
   funext,
   dsimp,
+  norm_num,
+  cases n with n',
+  { norm_num,
+    rw sum_range_succ,
+    rw sum_range_succ,
+    rw sum_range_zero,
+    norm_num,
+    unfold F,
+    split_ifs,
+      cases h_1,
+      { clear h h_1,
+        let f : fin 0 → G := λ ⟨i, hi⟩, false.elim (by cases hi),
+        have hf0 : ∀ f' : fin 0 → G, f' = f,
+          intro f',
+          ext i,
+          cases i.2,
+        have hf1 : ∀ f' : fin 0 → G, φ f' = φ f,
+          intro f', rw hf0 f',
+        conv begin
+          to_lhs,
+          congr,
+            rw hf1,
+            skip,
+          congr,
+            rw hf1,
+            skip,
+          congr,
+            rw hf1,
+            skip,
+          congr,
+            rw hf1,
+            skip,
+          congr,
+            rw hf1,
+            skip,
+          congr,
+            skip,
+          rw hf1,
+        end,
+        simp,
+      },
+      cases h_1,
+      cases h_1,
+      cases h_2,
+      dsimp at h, exfalso, apply h, norm_num,
+  },
+
+--  cases n with 0 n',
+  rw ←double_sum_zero1 n' G gi _ φ,
   sorry  
 end
 
