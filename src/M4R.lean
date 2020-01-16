@@ -144,16 +144,16 @@ begin
 rw pow_add,
 end
 
-theorem double_sum_zero (n':ℕ)(G : Type*)[group G](g:fin (n'+3)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain (n'+1) G M):
-(range (n'+1)).sum(λ i, (-1:ℤ)^(i+1)• (range i).sum(λ j, (-1:ℤ )^(j+1)• (v (F j (F i g))))) =0:=
-begin
+--theorem double_sum_zero (n':ℕ)(G : Type*)[group G](g:fin (n'+3)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain (n'+1) G M):
+--(range (n'+1)).sum(λ i, (-1:ℤ)^(i+1)• (range i).sum(λ j, (-1:ℤ )^(j+1)• (v (F j (F i g))))) =0:=
+--begin
 
-simp only [(finset.sum_smul' _ _ _).symm, smul_smul, pow_add],
-norm_num,
-simp only [pow_add'],
---simp only [degenerate2],
-sorry
-end
+--simp only [(finset.sum_smul' _ _ _).symm, smul_smul, pow_add],
+--norm_num,
+--simp only [pow_add'],
+----simp only [degenerate2],
+--sorry
+--end
 
 
 theorem degenerate2{n:ℕ}{j:ℕ}{k:ℕ}{G : Type*}[group G](h:j≤ k)(g:fin (n+2)→ G): 
@@ -269,9 +269,27 @@ begin
     cases mem_product.1 hjk with hj hk,
     replace hj : j < n' + 1 := mem_range.1 hj,
     replace hk : k < n' := mem_range.1 hk,
+    rw finset.mem_product,
     split_ifs,
-    sorry }
+    split,
+    show k+1∈ range(n'+1),
+    rw mem_range,
+    linarith,
+    show j∈ range(n'),
+    rw mem_range,
+    exact lt_of_le_of_lt h hk,
+    split,
+    show k∈ range(n'+1),
+    rw mem_range,
+    linarith,
+    show j-1∈ range(n'),
+    rw mem_range,
+    rw nat.sub_lt_left_iff_lt_add,
+    linarith,
+    rw not_le at h, 
+    exact nat.one_le_of_lt h,}
 end
+
 
 #check @finset.product
 #check @finset.sum_bij
@@ -281,44 +299,70 @@ end
 --example (a b:ℤ )(M : Type*) [add_comm_group M](c:M):(a+b) • c=a• c+b• c :=begin library_search end
 --example (a b:ℕ) :(-a:ℤ ) + (-b:ℤ )=-(a+b) := begin library_search end
 --#example (n:ℕ ): (-1:ℤ)^n  + (-1:ℤ)^(n+1)=0 := begin library_search end
-#exit 
 
 
-funext t,
-conv begin
-  to_lhs,
-  simp only [F],
-end,
-split_ifs;try {refl}; try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith};
+
+--funext t,
+--conv begin
+--  to_lhs,
+ -- simp only [F],
+--end,
+--split_ifs;try {refl}; try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith};
 --rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *,
 --change t.val < k + 1 at h_2,
-unfold F,
-{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
-{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
-{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
-{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
-{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
-swap,
-{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
-
-
+--unfold F,
+--{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
+--{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
+--{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
+--{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
+--{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
+--swap,
 --{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
 
 
-
+--{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
 
 --split_ifs; try {refl}; try {rw (show (t : fin(n + 1)).val = t.val, by refl) at *},
 --{split_ifs;try {rw (show (↑t : fin(n + 1)).val = t.val, by refl) at *}; try {exfalso;linarith}; try {refl}; try {simp only [mul_assoc]}; try {finish}},
+--end
 
+def F_first{n:ℕ} {G : Type*}[group G](g:fin (n+1)→ G):fin n→ G
+:= λ k,   g  ⟨k.val+1, add_lt_add_right k.2 1⟩ 
 
+def d{n:ℕ}{G : Type*} [group G] {M : Type*} [add_comm_group M] [G_module G M]
+(φ: cochain n G M): (cochain (n+1) G M):= λ(gi: fin (n+1) → G), 
+gi ⟨0, (by simp)⟩ • φ (λ i, gi ⟨i.val + 1, add_lt_add_right i.2 1⟩)
++(range (n+1)).sum(λ j,(-1:ℤ )^(j+1)• φ (F j gi))
 
-
-
+example (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M]
+(φ : cochain 1 G M) (hφ : d φ = (λ i, 0)) (g h : G) : φ (λ _, g * h) = φ (λ _, g) + g • φ (λ _, h) :=
+begin
+  unfold d at hφ,
+  let glist : fin 2 → G := λ i, if i.val = 0 then g else if i.val = 1 then h else sorry,
+  have h2 : (λ (gi : fin (1 + 1) → G),
+       gi ⟨0, _⟩ • φ (λ (i : fin 1), gi ⟨i.val + 1, _⟩) +
+         finset.sum (finset.range (1 + 1)) (λ (j : ℕ), (-1: ℤ) ^ (j + 1) • φ (F j gi))) glist = 0,
+    rw hφ,
+  dsimp at h2,
+  change g • φ (λ (i : fin 1), glist ⟨i.val + 1, _⟩) +
+      finset.sum (finset.range (1 + 1)) (λ (j : ℕ), (-1 : ℤ) ^ (j + 1) • φ (F j glist)) =
+    0 at h2,
+  rw finset.sum_range_succ at h2,
+  rw finset.sum_range_succ at h2,
+  rw finset.sum_range_zero at h2,
+  sorry
 end
 
-#exit
-def d(n:ℕ)(G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M]:
-(cochain n G M)→ (cochain (n+1) G M):= λ fin (n+1) → G, 
+theorem d_square_zero{n:ℕ}{G : Type*} [group G] {M : Type*} [add_comm_group M] [G_module G M]
+(φ: cochain n G M):d (d φ )=λ(gi: fin (n+2) → G), 0:=
+begin
+  unfold d,
+  funext,
+  dsimp,
+  sorry  
+end
+
+#exit 
 def cocycle (n:ℕ) (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] :=
 {f : G → M // ∀  : G, }
 
