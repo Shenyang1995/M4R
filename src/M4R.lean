@@ -3,6 +3,8 @@ import group_theory.subgroup -- for kernels
 import algebra.module
 import tactic.linarith
 import tactic.omega
+import tactic.fin_cases
+
 
 class G_module (G : Type*) [group G] (M : Type*) [add_comm_group M]
   extends  has_scalar G M :=
@@ -350,7 +352,38 @@ begin
   rw finset.sum_range_succ at h2,
   rw finset.sum_range_succ at h2,
   rw finset.sum_range_zero at h2,
-  sorry
+  have H : (-1 : ℤ) ^ (1 + 1) = 1,
+    norm_num,
+  rw H at h2,
+  rw one_smul at h2,
+  rw ←add_assoc at h2,
+  rw add_zero at h2,
+  clear H,
+  have H : (-1 : ℤ) ^ (0 + 1) = -1,
+    norm_num,
+  rw H at h2,
+  rw neg_one_smul at h2,
+  clear H,
+  rw add_neg_eq_zero at h2,
+  rw eq_comm at h2,
+  rw add_comm at h2,
+  convert h2,
+  {
+    ext,
+    cases x with x hx,
+    cases (nat.sub_eq_zero_of_le hx),
+    refl,
+  },
+  { ext,
+    cases x with x hx,
+    cases (nat.sub_eq_zero_of_le hx),
+    refl,
+  },
+  { ext,
+    cases x with x hx,
+    cases (nat.sub_eq_zero_of_le hx),
+    refl,
+  }
 end
 
 theorem d_square_zero{n:ℕ}{G : Type*} [group G] {M : Type*} [add_comm_group M] [G_module G M]
