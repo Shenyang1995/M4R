@@ -233,7 +233,7 @@ end
 #check finset.product
 #check finset.range
 theorem double_sum_zero1 (n':ℕ)(G : Type*)[group G](g:fin (n'+3)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain (n'+1) G M):
-(range (n'+1)).sum(λ i, (range (n')).sum(λ j, (F2 g v (i,j)))) =0:=
+(range (n'+3)).sum(λ i, (range (n'+2)).sum(λ j, (F2 g v (i,j)))) =0:=
 begin
   rw <-sum_product,
   apply sum_involution (λ jk h, invo jk),
@@ -241,9 +241,9 @@ begin
     let j := jk.1,
     let k := jk.2,
     -- do we need these next three lines?
-    cases mem_product.1 hjk with hj hk,
-    replace hj : j < n' + 1 := mem_range.1 hj,
-    replace hk : k < n' := mem_range.1 hk,
+    --cases mem_product.1 hjk with hj hk,
+    --replace hj : j < n' + 1 := mem_range.1 hj,
+    --replace hk : k < n' := mem_range.1 hk,
     by_cases hin : j ≤ k,
     { rw add_comm,
       convert F2_degenerate hin g v,
@@ -275,22 +275,22 @@ begin
     let k := jk.2,
     -- do we need these next three lines?
     cases mem_product.1 hjk with hj hk,
-    replace hj : j < n' + 1 := mem_range.1 hj,
-    replace hk : k < n' := mem_range.1 hk,
+    replace hj : j < n' + 3 := mem_range.1 hj,
+    replace hk : k < n'+ 2 := mem_range.1 hk,
     rw finset.mem_product,
     split_ifs,
     split,
-    show k+1∈ range(n'+1),
+    show k+1∈ range(n'+3),
     rw mem_range,
     linarith,
-    show j∈ range(n'),
+    show j∈ range(n'+2),
     rw mem_range,
     exact lt_of_le_of_lt h hk,
     split,
-    show k∈ range(n'+1),
+    show k∈ range(n'+3),
     rw mem_range,
     linarith,
-    show j-1∈ range(n'),
+    show j-1∈ range(n'+2),
     rw mem_range,
     rw nat.sub_lt_left_iff_lt_add,
     linarith,
@@ -302,7 +302,7 @@ end
 #check @finset.product
 #check @finset.sum_bij
 #check @finset.sum_bind
-#check @finset.sum_smul
+#check @finset.sum
 #check finset.bind
 --example (a b:ℤ )(M : Type*) [add_comm_group M](c:M):(a+b) • c=a• c+b• c :=begin library_search end
 --example (a b:ℕ) :(-a:ℤ ) + (-b:ℤ )=-(a+b) := begin library_search end
@@ -391,6 +391,74 @@ begin
     refl,
   }
 end
+--theorem lt_succ_self{n j:ℕ }{H:j=nat.succ n}:n<j:=begin rw H, exact nat.lt_succ_self n,end 
+theorem add_one_finset{n:ℕ }{n'=nat.succ n}{j:fin n }:j.1+1<n'+1:=begin 
+have h2: n<n',
+rw H, 
+exact nat.lt_succ_self n,
+--rw H, exact lt_add_one n,
+--have h3: j.val<n',
+--exact lt.trans j.is_lt h2,
+norm_num,
+exact lt.trans j.is_lt h2,
+end
+
+--example {a b c d:ℕ }{h1:a<c}{h2:b<d} : (a+b) < (c+b) := begin library_search end 
+theorem F_0_0(n':ℕ){G : Type*}[group G](g:fin (n'+1+1+1)→ G):F 0 g ⟨0, nat.succ_pos (n'+1)⟩ = g⟨ 0, nat.succ_pos (n'+1+1) ⟩ *g⟨ 1,nat.lt_of_sub_eq_succ rfl⟩ :=
+begin 
+refl,
+end
+
+theorem F_0_j{n':ℕ}{j:fin (n'+1)}{G : Type*}[group G](g:fin (n'+1+1+1)→ G):F 0 g⟨ j.val+1,nat.lt_succ_iff.mpr j.is_lt
+
+--norm_num,
+--have h3:1<2,
+--exact nat.lt_succ_self 1,
+--exact add_lt_add (lt.trans j.is_lt h2) h3,
+--end
+⟩ =g⟨ j.val+2, add_lt_add_right j.is_lt 2⟩:=
+begin
+refl,
+end
+
+theorem F_x_0(n' x:ℕ)(h:x>0){G : Type*}[group G](g:fin (n'+1+1+1)→ G):F x g ⟨0, nat.succ_pos (n'+1)⟩ = g⟨ 0, nat.succ_pos (n'+1+1) ⟩:=
+begin 
+unfold F,
+rw if_pos h,
+end
+
+theorem F_x_j(n' x:ℕ)(h:x>0){G : Type*}[group G](g:fin (n'+1+1+1)→ G):F x (λ (j:fin (n'+1+1)), g ⟨j.val+1, nat.lt_succ_iff.mpr j.is_lt,⟩ ) 
+= λ (j:fin (n'+1)), F (x+1) g⟨j.1+1, nat.lt_succ_iff.mpr j.is_lt,⟩:=
+begin 
+unfold F,
+funext,
+split_ifs,
+{refl},
+{exfalso,linarith},
+{exfalso,linarith},
+{exfalso,linarith},
+{refl},
+{have h5: k.val+1=x+1,
+exact congr_fun (congr_arg has_add.add h_2) 1,
+contradiction,
+},
+{exfalso,linarith},
+{have h5: k.val=x,
+exact nat.succ_inj h_4,
+contradiction},
+{refl},
+end
+--example {n m:ℕ }(h:n+1=m+1):n=m:=by library_search
+
+theorem sum_range_first{β : Type*} [_inst_1 : add_comm_monoid β] (f : ℕ → β) (n n': ℕ)(h:n'+1=n): sum (range n) f = f 0 + sum (range n') (λ i, f (i+1)):=begin 
+sorry
+end
+
+theorem sum_add_eq_add_sum {β : Type*} [_inst_1 : add_comm_monoid β] (f g: ℕ → β) (n: ℕ): sum (range n) (λ x, f x+g x)=sum (range n) f+sum(range n) g:=
+begin 
+sorry
+end 
+
 
 theorem d_square_zero{n:ℕ}{G : Type*} [group G] {M : Type*} [add_comm_group M] [G_module G M]
 (φ: cochain n G M):d (d φ )=λ(gi: fin (n+2) → G), 0:=
@@ -446,7 +514,10 @@ begin
   },
 
 --  cases n with 0 n',
-  rw ←double_sum_zero1 n' G gi _ φ,
+rw ←double_sum_zero1 n' G gi _ φ,
+unfold F2,
+dsimp,
+
   sorry  
 end
 
