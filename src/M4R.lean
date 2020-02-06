@@ -16,8 +16,52 @@ attribute [simp] G_module.linear G_module.mul
 
 @[simp] lemma G_module.G_neg {G : Type*} [group G] {M : Type*} [add_comm_group M]
   [G_module G M]
-  (g : G) (m : M) : g • (-m) = -(g • m) := sorry
+  (g : G) (m : M) : g • (-m) = -(g • m) := 
+  begin
+  -- h1: g • (m+(-m))=(0:M),
+  --norm_num,
+ -- have h: g• (0:M)+g• (0:M)=g• ((0:M)+(0:M)),
+  --rw G_module.linear,
+ -- rw add_zero at h,
+  --exact add_left_eq_self.mp h,
+  --rw G_module.linear at h1,
+  --have h2:g • m + g • -m -(g• m)= -(g• m),
+ -- exact add_left_eq_self.mpr h1,
+ -- have h3:g • m + g • -m -(g• m)= g • -m,
+ -- exact add_sub_cancel' _ _,
+ -- exact (eq.congr rfl h2).mp (eq.symm h3),
+ have h:g • -m +g • m= -(g • m)+g • m,
+ rw <-G_module.linear,
+ norm_num,
+ have h: g• (0:M)+g• (0:M)=g• ((0:M)+(0:M)),
+ rw G_module.linear,
+ rw add_zero at h,
+ exact add_left_eq_self.mp h,
+ exact (add_right_inj (g • m)).mp h,
+  end
 
+
+lemma G_module.G_sum_smul {G : Type*} [group G] {M : Type*} [add_comm_group M]
+[G_module G M] (n:ℕ )(g : G)(f: ℕ → M):finset.sum  (finset.range (n+1))(λ (x : ℕ ), g • f x) = g • finset.sum (finset.range(n+1)) f:=
+begin 
+induction n with d hd,
+norm_num,
+rw finset.sum_range_succ,
+rw hd,
+rw <-G_module.linear,
+rw <-finset.sum_range_succ _ (d+1),
+end
+
+lemma G_module.neg_one_pow_mul_comm {G : Type*} [group G] {M : Type*} [add_comm_group M]
+[G_module G M] (n:ℕ  )(g:G)(m:M): (-1:ℤ )^n • g • m = g • (-1:ℤ)^n • m:=
+begin
+induction n with d hd,
+norm_num,
+rw nat.succ_eq_add_one,
+rw pow_add,
+norm_num,
+exact hd,
+end
 def cochain(n:ℕ)(G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] := 
 (fin n → G) → M
 
@@ -229,9 +273,9 @@ begin
 end
 
 --example (n:ℕ )(x:ℕ){G : Type*}[group G](g:fin (n+2)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain n G M):F2 g v(x,x)=v (F (x) (F (x) g)):=rfl
-#print prod
-#check finset.product
-#check finset.range
+--#print prod
+--#check finset.product
+--#check finset.range
 theorem double_sum_zero1 (n':ℕ)(G : Type*)[group G](g:fin (n'+3)→ G)(M : Type*) [add_comm_group M] [G_module G M](v:cochain (n'+1) G M):
 (range (n'+3)).sum(λ i, (range (n'+2)).sum(λ j, (F2 g v (i,j)))) =0:=
 begin
@@ -299,11 +343,12 @@ begin
 end
 
 
-#check @finset.product
-#check @finset.sum_bij
-#check @finset.sum_bind
-#check @finset.sum
-#check finset.bind
+--#check @finset.product
+--#check @finset.sum_bij
+--#check @finset.sum_bind
+--#check @finset.sum
+--#check finset.bind
+
 --example (a b:ℤ )(M : Type*) [add_comm_group M](c:M):(a+b) • c=a• c+b• c :=begin library_search end
 --example (a b:ℕ) :(-a:ℤ ) + (-b:ℤ )=-(a+b) := begin library_search end
 --#example (n:ℕ ): (-1:ℤ)^n  + (-1:ℤ)^(n+1)=0 := begin library_search end
@@ -340,7 +385,7 @@ def F_first{n:ℕ} {G : Type*}[group G](g:fin (n+1)→ G):fin n→ G
 def d{n:ℕ}{G : Type*} [group G] {M : Type*} [add_comm_group M] [G_module G M]
 (φ: cochain n G M): (cochain (n+1) G M):= λ(gi: fin (n+1) → G), 
 gi ⟨0, (by simp)⟩ • φ (λ i, gi ⟨i.val + 1, add_lt_add_right i.2 1⟩)
-+(range (n+1)).sum(λ j,(-1:ℤ )^(j+1)• φ (F j gi))
++(range (n+1)).sum(λ j,(-1:ℤ  )^(j+1)• φ (F j gi))
 
 example (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M]
 (φ : cochain 1 G M) (hφ : d φ = (λ i, 0)) (g h : G) : φ (λ _, g * h) = φ (λ _, g) + g • φ (λ _, h) :=
@@ -427,7 +472,7 @@ unfold F,
 rw if_pos h,
 end
 
-theorem F_x_j(n' x:ℕ)(h:x>0){G : Type*}[group G](g:fin (n'+1+1+1)→ G):F x (λ (j:fin (n'+1+1)), g ⟨j.val+1, nat.lt_succ_iff.mpr j.is_lt,⟩ ) 
+theorem F_x_j(n' x:ℕ){G : Type*}[group G](g:fin (n'+1+1+1)→ G):F x (λ (j:fin (n'+1+1)), g ⟨j.val+1, nat.lt_succ_iff.mpr j.is_lt,⟩ ) 
 = λ (j:fin (n'+1)), F (x+1) g⟨j.1+1, nat.lt_succ_iff.mpr j.is_lt,⟩:=
 begin 
 unfold F,
@@ -439,27 +484,33 @@ split_ifs,
 {exfalso,linarith},
 {refl},
 {have h5: k.val+1=x+1,
-exact congr_fun (congr_arg has_add.add h_2) 1,
+rw h_1,
 contradiction,
 },
 {exfalso,linarith},
 {have h5: k.val=x,
-exact nat.succ_inj h_4,
+exact nat.succ_inj h_3,
 contradiction},
 {refl},
 end
 --example {n m:ℕ }(h:n+1=m+1):n=m:=by library_search
 
-theorem sum_range_first{β : Type*} [_inst_1 : add_comm_monoid β] (f : ℕ → β) (n n': ℕ)(h:n'+1=n): sum (range n) f = f 0 + sum (range n') (λ i, f (i+1)):=begin 
-sorry
+theorem sum_range_first{β : Type*} [_inst_1 : add_comm_monoid β] (f : ℕ → β) (n': ℕ): 
+sum (range (n'+1)) f = f 0 + sum (range n') (λ i, f (i+1)):=
+begin 
+--induction n' with d hd,
+--{refl},
+--rw sum_range_suc
+rw sum_range_succ', 
+rw add_comm,
 end
 
 theorem sum_add_eq_add_sum {β : Type*} [_inst_1 : add_comm_monoid β] (f g: ℕ → β) (n: ℕ): sum (range n) (λ x, f x+g x)=sum (range n) f+sum(range n) g:=
 begin 
-sorry
+exact sum_add_distrib,
 end 
 
-
+--#check @finset.sum_range_succ'
 theorem d_square_zero{n:ℕ}{G : Type*} [group G] {M : Type*} [add_comm_group M] [G_module G M]
 (φ: cochain n G M):d (d φ )=λ(gi: fin (n+2) → G), 0:=
 begin
@@ -517,9 +568,38 @@ begin
 rw ←double_sum_zero1 n' G gi _ φ,
 unfold F2,
 dsimp,
-
-  sorry  
+simp only [smul_add],
+rw sum_add_eq_add_sum,
+rw sum_range_succ' _ (n'+2),
+rw F_0_0,
+simp only [F_0_j],
+rw [zero_add, pow_one, neg_one_smul],
+rw <-sub_eq_add_neg,
+rw sub_add_eq_add_sub,
+apply add_eq_of_eq_sub',
+convert sub_add_cancel _ _,
+  show _ = sum (range (n' + 2))
+        ((λ (x : ℕ),
+              (-(1 : ℤ )) ^ (x + 1 + 1) • F (x + 1) gi ⟨0, _⟩ • φ (λ (i : fin (nat.succ n')), F (x + 1) gi ⟨i.val + 1, _⟩)))+_,
+simp only [F_x_0 _ _ (nat.succ_pos _)],
+simp only [(F_x_j n' _ gi).symm],
+rw sub_eq_add_neg,
+convert add_comm _ _,
+{
+  simp only [(pow_add' _ _ _).symm, nat.succ_eq_add_one],
+  simp only [(G_module.G_sum_smul _ _ _).symm],
+  norm_num,
+  simp only [G_module.neg_one_pow_mul_comm],
+},
+{
+  simp only [(finset.sum_smul' _ _ _).symm],
+  simp only [nat.succ_eq_add_one, smul_smul,pow_add'],
+  simp only [(add_assoc _ _ _).symm,(pow_add' _ _ _).symm],
+  norm_num,
+},              
+ 
 end
+--#check neg_one_pow_eq_pow_mod_two
 
 #exit 
 def cocycle (n:ℕ) (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] :=
