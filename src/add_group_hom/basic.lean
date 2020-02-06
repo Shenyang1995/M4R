@@ -7,6 +7,14 @@ import algebra.group.hom group_theory.subgroup
 @[reducible] def add_group_hom (G : Type*) (H : Type*) [add_group G] [add_group H] :=
   add_monoid_hom G H
 
+def add_group_hom.mk {G : Type*} [add_group G] {H : Type*} [add_group H] (f : G → H)
+(h : ∀ a b : G, f(a + b) = f a + f b) : add_group_hom G H :=
+{ to_fun := f,
+  map_zero' := begin
+    sorry
+  end,
+  map_add' := h }
+
 structure add_subgroup (G : Type*) [add_group G] :=
 (carrier : set G)
 (is_add_subgroup : is_add_subgroup carrier) 

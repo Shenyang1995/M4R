@@ -4,6 +4,7 @@ import algebra.module
 import tactic.linarith
 import tactic.omega
 import tactic.fin_cases
+import add_group_hom.basic
 
 
 class G_module (G : Type*) [group G] (M : Type*) [add_comm_group M]
@@ -382,15 +383,15 @@ end
 def F_first{n:ℕ} {G : Type*}[group G](g:fin (n+1)→ G):fin n→ G
 := λ k,   g  ⟨k.val+1, add_lt_add_right k.2 1⟩ 
 
-def d{n:ℕ}{G : Type*} [group G] {M : Type*} [add_comm_group M] [G_module G M]
+def d.to_fun {n:ℕ}{G : Type*} [group G] {M : Type*} [add_comm_group M] [G_module G M]
 (φ: cochain n G M): (cochain (n+1) G M):= λ(gi: fin (n+1) → G), 
 gi ⟨0, (by simp)⟩ • φ (λ i, gi ⟨i.val + 1, add_lt_add_right i.2 1⟩)
 +(range (n+1)).sum(λ j,(-1:ℤ  )^(j+1)• φ (F j gi))
 
 example (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M]
-(φ : cochain 1 G M) (hφ : d φ = (λ i, 0)) (g h : G) : φ (λ _, g * h) = φ (λ _, g) + g • φ (λ _, h) :=
+(φ : cochain 1 G M) (hφ : d.to_fun φ = (λ i, 0)) (g h : G) : φ (λ _, g * h) = φ (λ _, g) + g • φ (λ _, h) :=
 begin
-  unfold d at hφ,
+  unfold d.to_fun at hφ,
   let glist : fin 2 → G := λ i, if i.val = 0 then g else if i.val = 1 then h else 1,
   have h2 : (λ (gi : fin (1 + 1) → G),
        gi ⟨0, _⟩ • φ (λ (i : fin 1), gi ⟨i.val + 1, _⟩) +
@@ -512,9 +513,9 @@ end
 
 --#check @finset.sum_range_succ'
 theorem d_square_zero{n:ℕ}{G : Type*} [group G] {M : Type*} [add_comm_group M] [G_module G M]
-(φ: cochain n G M):d (d φ )=λ(gi: fin (n+2) → G), 0:=
+(φ: cochain n G M):d.to_fun (d.to_fun φ )=λ(gi: fin (n+2) → G), 0:=
 begin
-  unfold d,
+  unfold d.to_fun,
   funext,
   dsimp,
   norm_num,
@@ -600,6 +601,16 @@ convert add_comm _ _,
  
 end
 --#check neg_one_pow_eq_pow_mod_two
+
+variables (n : ℕ) (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M]
+
+instance: add_comm_group (cochain n G M):=
+by sorry
+
+def d : add_group_hom (cochain n G M) (cochain (n + 1) G M) :=
+{ to_fun := d.to_fun,
+  map_zero' := sorry,
+  map_add' := _ }
 
 #exit 
 def cocycle (n:ℕ) (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] :=
