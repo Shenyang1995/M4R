@@ -22,6 +22,43 @@ structure add_subgroup (G : Type*) [add_group G] :=
 (carrier : set G)
 (is_add_subgroup : is_add_subgroup carrier) 
 
+instance foo (G : Type*) [add_group G] (H : add_subgroup G) :
+  is_add_subgroup H.carrier := H.is_add_subgroup
+
+instance (G : Type*) [add_group G] : has_le (add_subgroup G) :=
+⟨λ H K, H.carrier ⊆ K.carrier⟩
+
+instance (G : Type*) [add_group G] : has_subset (add_subgroup G) :=
+⟨λ H K, H.carrier ⊆ K.carrier⟩
+
+instance (G : Type*) [add_group G] : has_mem G (add_subgroup G) :=
+⟨λ g H, g ∈ H.carrier⟩
+
+namespace add_subgroup
+
+variables {G : Type*} [add_group G] (H : add_subgroup G)
+
+def zero_mem : (0 : G) ∈ H :=
+begin
+  exact _root_.is_add_submonoid.zero_mem H.carrier,
+end
+
+def neg_mem {g : G} : g ∈ H → -g ∈ H :=
+begin
+  intro h,
+  show -g ∈ H.carrier,
+  exact _root_.is_add_subgroup.neg_mem h,
+end
+
+def add_mem {g h : G} : g ∈ H → h ∈ H → g + h ∈ H :=
+begin
+  intros H1 H2,
+  show g + h ∈ H.carrier,
+  exact _root_.is_add_submonoid.add_mem H1 H2,
+end
+
+end add_subgroup
+
 namespace add_group_hom
 
 variables {G : Type*} {H : Type*} [add_group G] [add_group H]
@@ -78,3 +115,36 @@ def im (f : add_group_hom G H) : add_subgroup H :=
 }
 
 end add_group_hom
+
+structure add_subquotient (G : Type*) [add_group G] :=
+(bottom : add_subgroup G)
+(top : add_subgroup G)
+(incl : bottom ≤ top)
+
+variables (G : Type*) [add_group G]
+
+instance : has_coe_to_sort (add_subquotient G) :=
+{ S := _,
+  coe := λ H, quotient (
+    { r := λ s t, (s : G) - t ∈ H.bottom,
+    iseqv := ⟨
+      begin
+        intro g,
+        rw sub_self,
+        exact H.bottom.zero_mem,
+      end, 
+      begin
+        intros a b,
+        intro h,
+        rw ←neg_sub,
+        exact H.bottom.neg_mem h,
+      end, 
+      begin
+        intros a b c,
+        intros h1 h2,
+        suffices : ((a : G) - b) + (b - c) ∈ H.bottom,
+          convert this,
+          simp,
+        apply H.bottom.add_mem h1 h2,
+      end⟩ 
+    } : setoid H.top.carrier) }
