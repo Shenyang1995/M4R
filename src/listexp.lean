@@ -12,10 +12,7 @@ def L : mylist ℕ := mylist.cons 2 $ mylist.cons 4 $ mylist.nil ℕ
 #reduce L
 #reduce map ℕ ℕ (λ n, n ^ 2) L
 
-#reduce list.map (λ n, n^2) [1,2,3] 
-list.range(n)
 
-algebra.pi_instances
 
 def sum {G:Type} [add_group G]: mylist G → G 
 |(nil G):=0

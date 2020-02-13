@@ -11,7 +11,10 @@ def add_group_hom.mk {G : Type*} [add_group G] {H : Type*} [add_group H] (f : G 
 (h : ∀ a b : G, f(a + b) = f a + f b) : add_group_hom G H :=
 { to_fun := f,
   map_zero' := begin
-    sorry
+    have h1: f (0:G) + f 0=f((0:G)+(0:G)), 
+    rw h,
+    norm_num at h1,
+    exact h1,
   end,
   map_add' := h }
 
@@ -35,7 +38,15 @@ def ker (f : add_group_hom G H) : add_subgroup G :=
       rw [f.map_add, ha, hb, add_zero],
     end,
     neg_mem := begin
-      sorry
+      intros a ha,
+      change f a = 0 at ha,
+      show f (-a ) = 0,
+      have h2: f (a+(-a))=0,
+      norm_num,
+      --have h3: f(a)+f(-a)=0,
+      rw f.map_add at h2,
+      rw ha at h2,
+      rw zero_add at h2, exact h2,
     end
   }
 }
@@ -48,7 +59,11 @@ def im (f : add_group_hom G H) : add_subgroup H :=
       exact f.map_zero
     end,
     add_mem := begin
-      sorry
+      intros a b ha hb,
+      cases ha with c hc,
+      cases hb with d hd,
+      use c+d,
+      rw [f.map_add, hc, hd],
     end,
     neg_mem := begin
       intro b,
