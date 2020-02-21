@@ -616,6 +616,14 @@ def d : add_group_hom (cochain n G M) (cochain (n + 1) G M) :=
  
   end }
 
+theorem d_square_zero2 :d (n + 1) G M ∘ d n G M = 0 :=
+begin
+funext,
+--dsimp,
+show d.to_fun (d.to_fun x) gi=0,
+rw d_square_zero x,
+end 
+
 example {β : Type*} [_inst_1 : add_comm_monoid β] (f g: ℕ → β)(i:ℕ ) :  f i+ g i=((λ (j:ℕ), f j) + λ (j:ℕ ), g j ) i:=rfl
 example {β : Type*} [_inst_1 : add_comm_monoid β]{a b c d:β  }:a+b+(c+d)=a+c+(b+d):=
 begin 
