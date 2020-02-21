@@ -1,4 +1,5 @@
 import add_group_hom.basic
+import data.set.basic
 
 structure add_subquotient (A : Type*) [add_comm_group A] :=
 (bottom : add_subgroup A)
@@ -34,11 +35,10 @@ instance : has_coe_to_sort (add_subquotient A) :=
     } : setoid H.top.carrier) }
 
 instance (B : add_subquotient A) : add_comm_group (↥B) :=
-{ add := λ a b, quotient.map₂' (λ a' b', _) _ _ _,
-  add_assoc := _,
-  zero := _,
-  zero_add := _,
-  add_zero := _,
-  neg := _,
-  add_left_neg := _,
-  add_comm := _ }
+sorry
+
+def hi (A B : Type*) [add_comm_group A] [add_comm_group B]
+(f : A →+ B) (Q : add_subquotient A) (R : add_subquotient B)
+(H1 : set.image f.to_fun Q.top.carrier ⊆ R.top.carrier)
+(H2 : set.image f.to_fun Q.bottom.carrier ⊆ R.bottom.carrier) :
+↥Q →+ ↥R := sorry
