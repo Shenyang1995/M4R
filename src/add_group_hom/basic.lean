@@ -88,7 +88,7 @@ def ker (f : add_group_hom G H) : add_subgroup G :=
   }
 }
 
-def im (f : add_group_hom G H) : add_subgroup H :=
+def range (f : add_group_hom G H) : add_subgroup H :=
 { carrier := set.range f,
   is_add_subgroup := { 
     zero_mem := begin

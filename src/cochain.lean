@@ -622,7 +622,13 @@ funext,
 --dsimp,
 show d.to_fun (d.to_fun x) gi=0,
 rw d_square_zero x,
-end 
+end
+
+theorem range_d_sub_ker_d : add_group_hom.range (d n G M) ⊆ add_group_hom.ker (d (n + 1) G M) :=
+begin
+  rintros _ ⟨a, rfl⟩,
+  exact d_square_zero a
+end
 
 example {β : Type*} [_inst_1 : add_comm_monoid β] (f g: ℕ → β)(i:ℕ ) :  f i+ g i=((λ (j:ℕ), f j) + λ (j:ℕ ), g j ) i:=rfl
 example {β : Type*} [_inst_1 : add_comm_monoid β]{a b c d:β  }:a+b+(c+d)=a+c+(b+d):=
