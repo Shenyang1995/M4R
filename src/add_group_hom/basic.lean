@@ -73,3 +73,24 @@ def range (f : add_group_hom G H) : add_subgroup H :=
 }
 
 end add_group_hom
+
+namespace add_subgroup
+
+def quotient.lift {A : Type*} [add_comm_group A] {C : Type*} [add_comm_group C]
+  (f : A →+ C) (B : add_subgroup A) (hB : B ⊆ add_group_hom.ker f) :
+B.quotient →+ C :=
+{ to_fun := λ q, q.lift_on' ⇑f begin
+    intros a₁ a₂ h,
+    change (-a₁) + a₂ ∈ B at h,
+    have h2 : f (-a₁ + a₂) = 0 := hB h,
+    rwa [f.map_add, f.map_neg, neg_add_eq_iff_eq_add,
+      add_zero, eq_comm] at h2,
+  end,
+  map_zero' := sorry,
+  map_add' := sorry }
+
+def quotient.map {A₁ : Type*} [add_comm_group A₁] {A₂ : Type*} [add_comm_group A₂]
+  (B₁ : add_subgroup A₁) (B₂ : add_subgroup A₂) (f : A₁ →+ A₂) (hf : B₁.map f ⊆ B₂) :
+quotient B₁ → quotient B₂ := sorry -- use quotient.lift on induced group hom A₁ → A₂/B₂
+
+end add_subgroup
