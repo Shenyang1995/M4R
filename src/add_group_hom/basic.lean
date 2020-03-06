@@ -94,7 +94,7 @@ B.quotient →+ C :=
   intros x y,
   apply quotient.induction_on₂' x y,
   exact f.map_add,
-  sorry,
+  
   end }
 
 
