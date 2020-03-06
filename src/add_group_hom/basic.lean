@@ -88,11 +88,12 @@ B.quotient →+ C :=
   end,
   map_zero' := begin
   show f 0= 0,
-  norm_num,
-  end ,
+  exact f.map_zero,
+  end,
   map_add' := begin 
   intros x y,
-  
+  apply quotient.induction_on₂' x y,
+  exact f.map_add,
   sorry,
   end }
 
