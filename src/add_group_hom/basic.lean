@@ -86,8 +86,16 @@ B.quotient →+ C :=
     rwa [f.map_add, f.map_neg, neg_add_eq_iff_eq_add,
       add_zero, eq_comm] at h2,
   end,
-  map_zero' := sorry,
-  map_add' := sorry }
+  map_zero' := begin
+  show f 0= 0,
+  norm_num,
+  end ,
+  map_add' := begin 
+  intros x y,
+  
+  sorry,
+  end }
+
 
 def quotient.map {A₁ : Type*} [add_comm_group A₁] {A₂ : Type*} [add_comm_group A₂]
   (B₁ : add_subgroup A₁) (B₂ : add_subgroup A₂) (f : A₁ →+ A₂) (hf : B₁.map f ⊆ B₂) :
