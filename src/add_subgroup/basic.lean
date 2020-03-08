@@ -43,21 +43,21 @@ open set
 universe u
 
 def bot {G : Type u} [add_group G] : add_subgroup G :=
-{ carrier := {0},
-  is_add_subgroup := { zero_mem := mem_singleton _,
+{ carrier := {x| x=0},
+  is_add_subgroup := { zero_mem := rfl,
   add_mem := λ a b ha hb, begin
-    rw mem_singleton_iff at ha hb,
-    rw [ha, hb, add_zero, mem_singleton_iff],
+    cases ha, cases hb, 
+    apply zero_add,
   end,
   neg_mem := λ a ha, begin
-    rw mem_singleton_iff at ha,
-    rw [ha, neg_zero, mem_singleton_iff],
+    cases ha,
+    exact neg_zero,
   end } }
 
 instance : lattice.has_bot (add_subgroup G) := ⟨bot⟩
 
 def top {G : Type u} [add_group G] : add_subgroup G :=
-{ carrier := univ,
+{ carrier := {x | true},
   is_add_subgroup := { 
     zero_mem := mem_univ _,
     add_mem := λ _ _ _ _, mem_univ _,

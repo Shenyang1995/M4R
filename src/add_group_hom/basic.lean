@@ -74,7 +74,7 @@ lemma comap_comp {G₁ : Type*} [add_group G₁] {G₂ : Type*} [add_group G₂]
 def ker (f : add_group_hom G H) : add_subgroup G := add_group_hom.comap f ⊥
 
 lemma mem_ker (f : add_group_hom G H) (g : G) : g ∈ ker f ↔ f g = 0 :=
-set.mem_singleton_iff
+iff.rfl
 
 -- but f.comap ⊥ doesn't :-/
 

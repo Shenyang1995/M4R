@@ -131,7 +131,8 @@ rw neg_one_power (j+k) G M,
 end
 
 open finset
-def finset.sum_smul' {α : Type*} {R : Type*} [semiring R] {M : Type*} [add_comm_monoid M]
+
+def finset.sum_smul2 {α : Type*} {R : Type*} [semiring R] {M : Type*} [add_comm_monoid M]
   [semimodule R M] (s : finset α) (r : R) (f : α → M) :
     finset.sum s (λ (x : α), (r • (f x))) = r • (finset.sum s f) :=
 by haveI := classical.dec_eq α; exact
@@ -538,7 +539,7 @@ convert add_comm _ _,
   simp only [G_module.neg_one_pow_mul_comm],
 },
 {
-  simp only [(finset.sum_smul' _ _ _).symm],
+  simp only [(finset.sum_smul2 _ _ _).symm],
   simp only [nat.succ_eq_add_one, smul_smul,pow_add'],
   simp only [(add_assoc _ _ _).symm,(pow_add' _ _ _).symm],
   norm_num,
@@ -626,8 +627,10 @@ end
 
 theorem range_d_sub_ker_d : add_group_hom.range (d n G M) ⊆ add_group_hom.ker (d (n + 1) G M) :=
 begin
-  rintros _ ⟨a, rfl⟩,
-  exact d_square_zero a
+  rintros _ ⟨a, ha, rfl⟩,
+  show d n G M a ∈ add_group_hom.ker (d (n + 1) G M),
+  rw add_group_hom.mem_ker,
+  exact d_square_zero a,
 end
 
 example {β : Type*} [_inst_1 : add_comm_monoid β] (f g: ℕ → β)(i:ℕ ) :  f i+ g i=((λ (j:ℕ), f j) + λ (j:ℕ ), g j ) i:=rfl
