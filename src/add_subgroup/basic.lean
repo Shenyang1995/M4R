@@ -86,6 +86,9 @@ begin
   exact _root_.is_add_subgroup.neg_mem h,
 end
 
+def neg_mem_iff {g : G} : -g ∈ H ↔ g ∈ H :=
+⟨λ h, by rw ←neg_neg g; exact neg_mem H h, neg_mem H⟩
+
 def add_mem {g h : G} : g ∈ H → h ∈ H → g + h ∈ H :=
 begin
   intros H1 H2,

@@ -28,7 +28,7 @@ namespace add_group_hom
 variables {G : Type*} {H : Type*} [add_group G] [add_group H]
 
 def map {G₁ : Type*} [add_group G₁] {G₂ : Type*} [add_group G₂]
-  (f : G₁ →+ G₂) (H : add_subgroup G₁) : add_subgroup G₂ :=
+  (f : add_group_hom G₁ G₂) (H : add_subgroup G₁) : add_subgroup G₂ :=
 { carrier := (f : G₁ → G₂) '' H.carrier,
   is_add_subgroup := { 
     zero_mem := ⟨0, H.zero_mem, f.map_zero⟩,
@@ -39,7 +39,7 @@ def map {G₁ : Type*} [add_group G₁] {G₂ : Type*} [add_group G₂]
 }
 
 def comap {G₁ : Type*} [add_group G₁] {G₂ : Type*} [add_group G₂]
-  (f : G₁ →+ G₂) (H : add_subgroup G₂) : add_subgroup G₁ :=
+  (f : add_group_hom G₁ G₂) (H : add_subgroup G₂) : add_subgroup G₁ :=
 { carrier := (f : G₁ → G₂) ⁻¹' H.carrier,
   is_add_subgroup := { 
     zero_mem := begin
@@ -103,12 +103,16 @@ begin
   rw ←ext_iff,
   intro g,
   rw add_group_hom.mem_ker,
-  sorry -- should be easy
+  show quotient.mk' g = quotient.mk' 0 ↔ _,
+  rw quotient.eq',
+  show -g + 0 ∈ B ↔ _,
+  rw add_zero,
+  rw neg_mem_iff,
 end
 
 def quotient.lift {A : Type*} [add_comm_group A] {C : Type*} [add_comm_group C]
   (f : add_group_hom A C) (B : add_subgroup A) (hB : B ≤ add_group_hom.ker f) :
-B.quotient →+ C :=
+add_group_hom B.quotient C :=
 { to_fun := λ q, q.lift_on' ⇑f begin
     intros a₁ a₂ h,
     change (-a₁) + a₂ ∈ B at h,
@@ -127,7 +131,6 @@ B.quotient →+ C :=
   
   end }
 
-
 def quotient.map {A₁ : Type*} [add_comm_group A₁] {A₂ : Type*} [add_comm_group A₂]
   (B₁ : add_subgroup A₁) (B₂ : add_subgroup A₂) (f : add_group_hom A₁ A₂)
   (hf : B₁ ≤ add_group_hom.comap f B₂) :
@@ -135,10 +138,14 @@ def quotient.map {A₁ : Type*} [add_comm_group A₁] {A₂ : Type*} [add_comm_g
 { to_fun := quotient.lift ((quotient.mk B₂).comp f) B₁ $ le_trans hf begin
   unfold add_group_hom.ker,
   rw add_group_hom.comap_comp,
-  sorry
+  apply le_of_eq _,
+  congr',
+  symmetry,
+  apply quotient.ker_mk,
 end,
-  map_zero' := sorry,
-  map_add' := sorry }
--- sorry -- use quotient.lift on induced group hom A₁ → A₂/B₂
+  map_zero' := begin
+    apply add_monoid_hom.map_zero,
+  end,
+  map_add' := by apply add_monoid_hom.map_add }
 
 end add_subgroup
