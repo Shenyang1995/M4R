@@ -80,6 +80,12 @@ iff.rfl
 
 def range (f : add_group_hom G H) : add_subgroup H := add_group_hom.map f ⊤ 
 
+def induced {f : add_group_hom G H} {G₁ : add_subgroup G}
+  {H₁ : add_subgroup H} (h : f '' G₁ ⊆ H₁) :
+add_group_hom G₁ H₁ :=
+{ to_fun := λ g, ⟨f g.1, h ⟨g.1, g.2, rfl⟩⟩,
+  map_zero' := sorry,
+  map_add' := sorry }
 end add_group_hom
 
 /- quotients -/

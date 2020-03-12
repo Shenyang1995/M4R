@@ -34,9 +34,13 @@ def to_add_monoid_hom (A B : Type*) [add_comm_group A] [add_comm_group B]
 (f : A →+ B) (Q : add_subquotient A) (R : add_subquotient B)
 (H1 : set.image f.to_fun Q.top.carrier ⊆ R.top.carrier)
 (H2 : set.image f.to_fun Q.bottom.carrier ⊆ R.bottom.carrier) :
-↥Q →+ ↥R :=
-{ to_fun := sorry,
-  map_zero' := sorry,
-  map_add' := sorry }
+↥Q →+ ↥R := add_subgroup.quotient.map _ _ (add_group_hom.induced H1) begin
+  intros x hx,
+  apply H2,
+  use x,
+  split,
+    exact hx,
+  refl,
+end
 
 end add_subquotient

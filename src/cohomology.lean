@@ -1,4 +1,4 @@
-import G_module.basic
+import G_module.hom
 import cochain
 import algebra.pi_instances
 import add_group_hom.basic

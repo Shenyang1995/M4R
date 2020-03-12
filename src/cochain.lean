@@ -6,7 +6,7 @@ import tactic.omega
 import tactic.fin_cases
 import add_group_hom.basic
 import algebra.pi_instances
-import G_module.basic
+import G_module.hom
 
 def cochain(n:ℕ)(G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] := 
 (fin n → G) → M
@@ -641,5 +641,14 @@ rw <-add_assoc,
 rw add_left_comm,
 rw <-add_assoc,
 rw add_assoc,
-
 end
+
+variables {G} {M}
+variables {N : Type*} [add_comm_group N] [G_module G N]
+
+def cochain.map {n : ℕ} (f : M →[G] N) : cochain n G M → cochain n G N :=
+λ b c, f (b c)
+
+theorem d_map (n : ℕ) (f : M →[G] N) (c : cochain n G M) :
+cochain.map f (d.to_fun c) = d.to_fun (cochain.map f c) := sorry
+
