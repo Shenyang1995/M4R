@@ -649,6 +649,21 @@ variables {N : Type*} [add_comm_group N] [G_module G N]
 def cochain.map {n : ℕ} (f : M →[G] N) : cochain n G M → cochain n G N :=
 λ b c, f (b c)
 
-theorem d_map (n : ℕ) (f : M →[G] N) (c : cochain n G M) :
-cochain.map f (d.to_fun c) = d.to_fun (cochain.map f c) := sorry
 
+theorem d_map (n : ℕ) (f : M →[G] N) (c : cochain n G M) :
+cochain.map f (d.to_fun c) = d.to_fun (cochain.map f c) :=
+begin
+  ext gs,
+  unfold d.to_fun,
+  unfold cochain.map,
+  rw f.map_add,
+  rw f.map_smul,
+  rw f.map_sum,
+  congr',
+  ext x,
+  show (f.f) _ = _,
+  exact add_monoid_hom.map_gsmul _ _ _,
+end
+
+-- next: show (cochain.map f)(cocycle) = cocycle
+-- (cochain.map f)(coboundary) = coboundary

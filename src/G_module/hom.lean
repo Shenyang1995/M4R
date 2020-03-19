@@ -35,5 +35,19 @@ lemma comp_assoc {α : M →[G] N} {β : N →[G] P} {γ : P →[G] Q} :
 
 -- could do zero_comp, comp_zero
 
+variable (α : M →[G] N)
+
+example : ⇑α = α.f.to_fun := rfl
+
+lemma map_add {m n : M} : (α : M → N) (m + n) = (α : M → N) m + (α : M → N) n := 
+add_monoid_hom.map_add (α.f) m n
+
+lemma map_smul {g : G} {m : M} : (α : M → N) (g • m) = g • ((α : M → N) m) := 
+G_module_hom.smul α g m
+
+lemma map_sum (I : Type*) (φ : I → M) (s : finset I) :
+    α (finset.sum s φ) = finset.sum s (λ (x : I), α (φ x)) :=
+add_monoid_hom.map_sum α.f φ s 
+
 end G_module_hom
 
