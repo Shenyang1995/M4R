@@ -665,5 +665,3 @@ begin
   exact add_monoid_hom.map_gsmul _ _ _,
 end
 
--- next: show (cochain.map f)(cocycle) = cocycle
--- (cochain.map f)(coboundary) = coboundary
