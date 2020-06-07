@@ -30,8 +30,8 @@ instance : has_coe_to_sort (add_subquotient A) :=
   
 instance (B : add_subquotient A) : add_comm_group (↥B) := by apply_instance
 
-def to_add_monoid_hom (A B : Type*) [add_comm_group A] [add_comm_group B]
-(f : A →+ B) (Q : add_subquotient A) (R : add_subquotient B)
+def to_add_monoid_hom {A B : Type*}[add_comm_group A] [add_comm_group B]
+{f : A →+ B} {Q : add_subquotient A} {R : add_subquotient B}
 (H1 : set.image f.to_fun Q.top.carrier ⊆ R.top.carrier)
 (H2 : set.image f.to_fun Q.bottom.carrier ⊆ R.bottom.carrier) :
 ↥Q →+ ↥R := add_subgroup.quotient.map _ _ (add_group_hom.induced H1) begin
