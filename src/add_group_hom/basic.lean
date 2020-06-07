@@ -84,8 +84,16 @@ def induced {f : add_group_hom G H} {G₁ : add_subgroup G}
   {H₁ : add_subgroup H} (h : f '' G₁ ⊆ H₁) :
 add_group_hom G₁ H₁ :=
 { to_fun := λ g, ⟨f g.1, h ⟨g.1, g.2, rfl⟩⟩,
-  map_zero' := sorry,
-  map_add' := sorry }
+  map_zero' := begin 
+  rw subtype.ext,
+  simp,
+  convert f.map_zero,
+  end,
+  map_add' :=  begin
+  intros,
+  simp [subtype.ext],
+  apply f.map_add,
+  end }
 end add_group_hom
 
 /- quotients -/

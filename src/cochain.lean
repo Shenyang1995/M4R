@@ -6,7 +6,8 @@ import tactic.omega
 import tactic.fin_cases
 import add_group_hom.basic
 import algebra.pi_instances
-import G_module.hom
+import G_module.basic
+
 
 def cochain(n:ℕ)(G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] := 
 (fin n → G) → M
@@ -171,9 +172,10 @@ F2 g v (k+1, j)+F2 g v (j, k)=0:=
 begin 
 unfold F2,
 norm_num,
-rw add_comm,
+rw degenerate,
+rw <-add_smul,
 rw <-add_assoc,
-rw neg_degenerate,
+rw neg_one_power (j+k) G M,
 exact h,
 end
 
@@ -642,26 +644,3 @@ rw add_left_comm,
 rw <-add_assoc,
 rw add_assoc,
 end
-
-variables {G} {M}
-variables {N : Type*} [add_comm_group N] [G_module G N]
-
-def cochain.map {n : ℕ} (f : M →[G] N) : cochain n G M → cochain n G N :=
-λ b c, f (b c)
-
-
-theorem d_map (n : ℕ) (f : M →[G] N) (c : cochain n G M) :
-cochain.map f (d.to_fun c) = d.to_fun (cochain.map f c) :=
-begin
-  ext gs,
-  unfold d.to_fun,
-  unfold cochain.map,
-  rw f.map_add,
-  rw f.map_smul,
-  rw f.map_sum,
-  congr',
-  ext x,
-  show (f.f) _ = _,
-  exact add_monoid_hom.map_gsmul _ _ _,
-end
-
