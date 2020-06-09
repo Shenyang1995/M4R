@@ -24,8 +24,8 @@ begin
 end
 
 
-def cocycle.map (f : M →[G] N) : cocycle n G M →+ cocycle n G N :=
-{ to_fun := λ c, ⟨cochain.map f c.1, begin
+def cocycle.map (f : M →[G] N) : cocycle n G M → cocycle n G N :=
+λ c, ⟨cochain.map f c.1, begin
     show d.to_fun (cochain.map f c.val) = 0,
     rw ←d_map,
     have h0 : d.to_fun c.val = 0,
@@ -33,15 +33,24 @@ def cocycle.map (f : M →[G] N) : cocycle n G M →+ cocycle n G N :=
     rw h0,
     ext i,
     apply add_monoid_hom.map_zero,
-  end⟩,
-  map_zero' := begin   sorry
-  end,
-  map_add' := sorry }
+  end⟩
 
 
 def coboundary.map (f : M →[G] N) : coboundary n G M → coboundary n G N:=
  λ c, ⟨cochain.map f c.1, begin 
-  sorry
+  unfold coboundary, 
+unfold add_group_hom.range,
+unfold add_group_hom.map,
+dsimp,
+rw set.mem_image,
+have h0: ∃ (x : cochain n G M), d.to_fun x = c.val,
+sorry,
+rcases h0 with ⟨ y, hy1⟩,
+use cochain.map f y,
+split,
+trivial,
+rw <-hy1,
+exact (d_map f y).symm,
   end⟩
 
 def cochain.hom (f : M →[G] N) : cochain n G M →+ cochain n G N :=
@@ -71,14 +80,29 @@ begin
 unfold cochain.hom,
 unfold cohomology,
 unfold set.image,
-dsimp,
-intros  x hx,
-cases hx with a ha,
-have h2: cochain.map f a=x, exact and.right ha, 
+dsimp, 
+rintros x ⟨ a, ha1, h2⟩ ,
 rw <-h2,
-unfold coboundary,
-sorry
+
+unfold coboundary, 
+unfold add_group_hom.range,
+unfold add_group_hom.map,
+dsimp,
+rw set.mem_image,
+
+unfold coboundary at ha1,
+unfold add_group_hom.range at ha1,
+unfold add_group_hom.map at ha1,
+dsimp at ha1,
+rw set.mem_image at ha1,
+rcases ha1 with ⟨ y, hy1, hy2⟩,
+use cochain.map f y,
+split,
+trivial,
+rw <-hy2,
+exact (d_map f y).symm,
 end
+
 def cohomology.map (f : M →[G] N) : cohomology n G M →+ cohomology n G N:=
 add_subquotient.to_add_monoid_hom (cocycle.map_incl f) (coboundary.map_incl f)
 
