@@ -6,7 +6,7 @@ This project successfully formalizes a general definition for n cohomology group
 
 Some basic explanations on the structure of the files:
 
-     - cochain.lean contains definitions of cochain and differential, and the proof of the most important result d^2=0. 
+     - cochain.lean contains definitions of cochain and differential, and the proof of the most important lemma d^2=0. 
 
      - cohomology.lean contains definitions of cocycle, coboundary, and cohomology
      
