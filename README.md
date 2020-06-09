@@ -1,14 +1,15 @@
 # M4R : Group Cohomology in Lean
 
-This is my MSCi research project at Imperial College London in 2019-2020, with special thanks to my supervisor Kevin Buzzard.
+This is my MSCi research project at Imperial College London in 2019-2020, with special thanks to my supervisor, Professor Kevin Buzzard.
 
 This project successfully formalizes a general definition for n cohomology group in Lean. 
+Important: These definition does not give the n=0 case, and by convention: cocycle n G M := (n+1) cocycles, coboundary n G M := (n+1) coboundary, cohomology n G M := (n+1) cohomology. For H^0, just see Anca's work at https://github.com/anca797/group-cohomology.  
 
 Some basic explanations on the structure of the files:
 
      - cochain.lean contains definitions of cochain and differential, and the proof of the most important lemma d^2=0. 
 
-     - cohomology.lean contains definitions of cocycle, coboundary, and cohomology. Important: These definition does not give the n=0 case, and by convention: cocycle n G M := (n+1) cocycles, coboundary n G M := (n+1) coboundary, cohomology n G M := (n+1) cohomology. For H^0, just see Anca's work at https://github.com/anca797/group-cohomology.  
+     - cohomology.lean contains definitions of cocycle, coboundary, and cohomology. 
      
      - induced_maps.lean contains work towards the long exact sequence. Already done: induced homomorphism on cochain, commutative diagram
      and induced homomorphism on cohomology. 
